@@ -19,6 +19,7 @@
 #include <iostream>
 using namespace std;
 
+// Task 1
 int power(int x, int y) {
 	int power = x;
 	if (y == 0) {
@@ -36,7 +37,6 @@ int power(int x, int y) {
 	}
 }
 
-// Task 1
 int get_min_bits_length(int x)
 {
 	if (x==0){
@@ -167,10 +167,70 @@ void print_2s_complement_representation(int x)
 }
 
 // Task 5
+int get_bit(int x, int n) {
+	if (x >= 0) {
+		return get_bit_positive(x, n);
+	}
+	else {
+		return get_bit_negative(x, n);
+	}
+}
+
+int getCarryBitLength(int a, int b) {
+	int bitLength = (get_min_bits_length(a) > get_min_bits_length(b)) ? 
+	get_min_bits_length(a) : 
+	get_min_bits_length(b);
+
+	return bitLength;
+}
+
+int getCarryBit(int a, int b, int n) {
+	int carrier = 0;
+
+	int bitLength = getCarryBitLength(a, b);
+
+
+	for (int i=0; i < bitLength; i++){
+		int bitA = get_bit(a, i);
+		int bitB = get_bit(b, i);
+
+		if (bitA + bitB + carrier == 3) {
+			carrier = 1;
+			if (n == i){
+				return carrier;
+			}
+		} 
+		else if (bitA + bitB + carrier == 2)  {
+			carrier = 1;
+			if (n == i){
+				return carrier;
+			}
+		} 
+		else if (bitA + bitB + carrier == 1) {
+			carrier = 0;
+			if (n == i){
+				return carrier;
+			}
+		}
+		else if (bitA + bitB + carrier == 0) {
+			carrier = 0;
+			if (n == i){
+				return carrier;
+			}
+		}
+	}
+    return 404;
+}
+
 void print_addition_carry_out(int a, int b)
 {
-	int carrier;
+	int bitLength = getCarryBitLength(a, b);
 
+	for (int i = bitLength - 1 ; i > -1; i--) {
+		cout << getCarryBit(a, b, i);
+	}
+
+    cout << endl;
 }
 
 // DO NOT WRITE ANYTHING AFTER THIS LINE. ANYTHING AFTER THIS LINE WILL BE REPLACED
