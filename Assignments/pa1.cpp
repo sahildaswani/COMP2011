@@ -45,6 +45,9 @@ int get_min_bits_length(int x)
     else if (x == 2147483647) {
         return 32;
     }
+	else if (x == -2147483648){
+		return 32;
+	}
 	else if (x > 0){
 		int i = 0; 
 		while (true) {
@@ -108,6 +111,14 @@ int get_bit_negative(int x, int n)
 	if (x >= 0 || n < 0){
 		return -1;
 	} 
+	else if (x == -2147483648){
+		if (n < 31){
+			return 0;
+		}
+		else{
+			return 1;
+		}
+	}
 	else if (n >= get_min_bits_length(x)){
 		return 1;
 	}
