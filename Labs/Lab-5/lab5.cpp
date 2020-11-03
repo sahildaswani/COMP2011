@@ -89,7 +89,6 @@ void insert_word(const char filename[], const char word[]){
     else {
         cout << "The word \"" << word << "\" already exists." << endl;
     }
-
 }
 
 int main(){
