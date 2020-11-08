@@ -173,7 +173,7 @@ int main() {
     unsigned int cheese_y;
 
     // Change this paramenter from 0 to 5 to test different cases.
-    unsigned int test_case = 5;
+    unsigned int test_case = 2;
 
     // set width, height and cheese_x, cheese_y
     switch(test_case) {
@@ -193,7 +193,7 @@ int main() {
             width = 15; height = 9; cheese_x = 3; cheese_y = 5;
             break;
         default:
-            width = 7; height = 5; cheese_x = 3; cheese_y = 1;
+            width = 7; height = 5; cheese_x = 0; cheese_y = 4;
             break;
     }
 
@@ -204,10 +204,10 @@ int main() {
     if (test_case == 0) {
         char tmp[7*5] = {
             '.', '.', '.', '.', '.', '#', '.', 
-            '.', '#', '#', 'o', '.', '.', 'T',
+            '.', '#', '#', '.', '.', '.', 'T',
             '.', '.', '.', '.', '.', '.', '#', 
             '.', '.', '.', '.', '.', '#', '.', 
-            '.', '.', '#', '.', '.', '.', '.', 
+            'o', '.', '#', '.', '.', '.', '.', 
         }; 
         copy(tmp, tmp + width*height, maze);
     }
