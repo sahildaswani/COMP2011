@@ -3,9 +3,9 @@
 // COMP2011 (Fall 2020)
 // Assignment 2: Subtring Pattern Matching
 //
-// Name: <PUT YOUR NAME HERE>
-// Student ID: <PUT YOUR STUDENT ID NUMBER HERE>
-// Email: <PUT YOUR EMAIL HERE>
+// Name: Daswani, Sahil Bharat
+// Student ID: 20630681
+// Email: sbdaswani@connect.ust.hk
 
 #include <iostream>
 #include <limits>
@@ -87,9 +87,39 @@ int matchSubWithDot(const char str[], const char pattern[], int &length, int sta
 // If `pattern` is not found, returns the value `NOT_FOUND`,
 // and sets `length` to be 0.
 // The `pattern` may contain the zero or single character wildcard (`?`).
+int findSubLenAtStrPosWithQmark(const char str[], const char pattern[], int strPos = 0, int patPos = 0)
+{
+    if (pattern[patPos] != NULL_CHAR && str[strPos] == NULL_CHAR) // the substring is shorter than the pattern to match
+        return NOT_FOUND;
+    if (pattern[patPos] == QMARK || pattern[patPos] == str[strPos])
+    {
+        if (pattern[patPos + 1] == NULL_CHAR) // the entire pattern is matched
+            return 1;
+        // otherwise, the match is only part way through
+        int result = findSubLenAtStrPosWithQmark(str, pattern, strPos + 1, patPos + 1); // check if the remaining part of the pattern 
+                                                                                      // matches with that of the substring
+        int resultZero = findSubLenAtStrPosWithQmark(str, pattern, strPos, patPos + 1);
+        if (result != NOT_FOUND) { // only return a match when the entire pattern is matched
+            return 1 + result;
+        }
+        if (resultZero != NOT_FOUND) {
+            return resultZero;
+        }
+    }
+    return NOT_FOUND;
+}
+
 int matchSubWithQmark(const char str[], const char pattern[], int &length, int start = 0)
 {
-    
+    length = 0;
+    if (str[start] == NULL_CHAR)
+        return NOT_FOUND;
+    int testLength = findSubLenAtStrPosWithQmark(str, pattern, start);
+    if (testLength != NOT_FOUND) {
+        length = testLength;
+        return start;
+    }
+    return matchSubWithQmark(str, pattern, length, start + 1);
 }
 
 // Task 2 (35 points)
@@ -98,9 +128,48 @@ int matchSubWithQmark(const char str[], const char pattern[], int &length, int s
 // If `pattern` is not found, returns the value `NOT_FOUND`,
 // and sets `length` to be 0.
 // The `pattern` may contain the zero or more character wildcard (`%`).
+int findSubLenAtStrPosWithPercent(const char str[], const char pattern[], int strPos = 0, int patPos = 0)
+{
+    if (pattern[patPos] != NULL_CHAR && str[strPos] == NULL_CHAR) // the substring is shorter than the pattern to match
+        return NOT_FOUND;
+
+    if (pattern[patPos] == PERCENT && str[strPos] != NULL_CHAR) {
+        int resultMultiple = findSubLenAtStrPosWithPercent(str, pattern, strPos + 1, patPos);
+        if (resultMultiple != NOT_FOUND) {
+            return resultMultiple +1;
+        }
+    }
+    if (pattern[patPos] == PERCENT || pattern[patPos] == str[strPos])
+    {
+        if (pattern[patPos + 1] == NULL_CHAR) // the entire pattern is matched
+            return 1;
+        // otherwise, the match is only part way through
+        int result = findSubLenAtStrPosWithPercent(str, pattern, strPos + 1, patPos + 1); // check if the remaining part of the pattern 
+                                                                                      // matches with that of the substring
+        int resultZero = findSubLenAtStrPosWithPercent(str, pattern, strPos, patPos + 1);
+        
+        if (result != NOT_FOUND) { // only return a match when the entire pattern is matched
+            return 1 + result;
+        }
+        if (resultZero != NOT_FOUND) {
+            return resultZero;
+        }
+
+    }
+    return NOT_FOUND;
+}
+
 int matchSubWithPercent(const char str[], const char pattern[], int &length, int start = 0)
 {
-   
+    length = 0;
+    if (str[start] == NULL_CHAR)
+        return NOT_FOUND;
+    int testLength = findSubLenAtStrPosWithPercent(str, pattern, start);
+    if (testLength != NOT_FOUND) {
+        length = testLength;
+        return start;
+    }
+    return matchSubWithPercent(str, pattern, length, start + 1);
 }
 
 // Task 3 (25 points)
@@ -109,9 +178,85 @@ int matchSubWithPercent(const char str[], const char pattern[], int &length, int
 // If `pattern` is not found, returns the value `NOT_FOUND`,
 // and sets `length` to be 0.
 // The `pattern` may contain the '^', '.', '?', and '%' wildcards.
+int findSubLenAtStrPos(const char str[], const char pattern[], int strPos = 0, int patPos = 0)
+{
+
+    if (pattern[patPos] != NULL_CHAR && str[strPos] == NULL_CHAR)
+        return NOT_FOUND;
+
+
+    if (patPos == 0 && pattern[patPos] == CARET){
+        if (pattern[patPos+1] == str[0] || pattern[patPos+1] == DOT || pattern[patPos+1] == QMARK || pattern[patPos + 1] == PERCENT) {
+            return findSubLenAtStrPos(str, pattern, strPos, patPos +1);
+        }
+        return NOT_FOUND;
+    }
+    
+    if (pattern[patPos] == PERCENT && str[strPos] != NULL_CHAR) {
+        int result_multiple = findSubLenAtStrPos(str, pattern, strPos + 1, patPos);
+        if (result_multiple != NOT_FOUND)
+            return 1 + result_multiple;
+    }
+
+    if (pattern[patPos] != NULL_CHAR)
+    {
+        if (pattern[patPos] == DOT || pattern[patPos] == str[strPos])
+        {
+            if (pattern[patPos + 1] == NULL_CHAR)
+                return 1;
+            
+            int result_DOT = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
+                                                                                    
+            if (result_DOT != NOT_FOUND)
+                return 1 + result_DOT;
+        }
+
+        if (pattern[patPos] == QMARK || pattern[patPos] == str[strPos])
+        {
+            if (pattern[patPos + 1] == NULL_CHAR) 
+                return 1;
+
+            int result_QMARK_one = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
+            int result_QMARK_zero = findSubLenAtStrPos(str, pattern, strPos, patPos + 1); 
+
+            if (result_QMARK_one != NOT_FOUND)
+                return 1 + result_QMARK_one;
+            if (result_QMARK_zero != NOT_FOUND) 
+                return result_QMARK_zero;
+            else
+                return NOT_FOUND;
+        }
+
+        if (pattern[patPos] == PERCENT || pattern[patPos] == str[strPos])
+        {
+            if (pattern[patPos + 1] == NULL_CHAR) 
+                return 1;
+
+            int result = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
+            int result_ignore = findSubLenAtStrPos(str, pattern, strPos, patPos + 1);
+            
+            if (result != NOT_FOUND)
+                return 1 + result;
+            if (result_ignore != NOT_FOUND)
+                return result_ignore;
+            else
+                return NOT_FOUND;
+        }
+    }
+    return NOT_FOUND;
+}
+
 int matchSub(const char str[], const char pattern[], int &length, int start = 0)
 {
-    
+    length = 0;
+    if (str[start] == NULL_CHAR)
+        return NOT_FOUND;
+    int testLength = findSubLenAtStrPos(str, pattern, start);
+    if (testLength != NOT_FOUND) {
+        length = testLength;
+        return start;
+    }
+    return matchSub(str, pattern, length, start + 1);
 }
 
 // DO NOT WRITE ANYTHING AFTER THIS LINE. ANYTHING AFTER THIS LINE WILL BE REPLACED
