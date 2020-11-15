@@ -136,9 +136,10 @@ int findSubLenAtStrPosWithPercent(const char str[], const char pattern[], int st
     if (pattern[patPos] == PERCENT && str[strPos] != NULL_CHAR) {
         int resultMultiple = findSubLenAtStrPosWithPercent(str, pattern, strPos + 1, patPos);
         if (resultMultiple != NOT_FOUND) {
-            return resultMultiple +1;
+            return resultMultiple + 1;
         }
     }
+    
     if (pattern[patPos] == PERCENT || pattern[patPos] == str[strPos])
     {
         if (pattern[patPos + 1] == NULL_CHAR) // the entire pattern is matched
@@ -178,18 +179,24 @@ int matchSubWithPercent(const char str[], const char pattern[], int &length, int
 // If `pattern` is not found, returns the value `NOT_FOUND`,
 // and sets `length` to be 0.
 // The `pattern` may contain the '^', '.', '?', and '%' wildcards.
+
 int findSubLenAtStrPos(const char str[], const char pattern[], int strPos = 0, int patPos = 0)
 {
 
-    if (pattern[patPos] != NULL_CHAR && str[strPos] == NULL_CHAR)
+    if (pattern[patPos] != NULL_CHAR && str[strPos] == NULL_CHAR){
         return NOT_FOUND;
+    }
 
-
-    if (patPos == 0 && pattern[patPos] == CARET){
-        if (pattern[patPos+1] == str[0] || pattern[patPos+1] == DOT || pattern[patPos+1] == QMARK || pattern[patPos + 1] == PERCENT) {
-            return findSubLenAtStrPos(str, pattern, strPos, patPos +1);
+    if (patPos == 0) {
+        if (pattern[patPos] == CARET) {
+            if (pattern[patPos+1] == str[0] || 
+            pattern[patPos+1] == DOT || 
+            pattern[patPos+1] == QMARK || 
+            pattern[patPos + 1] == PERCENT) {
+                return findSubLenAtStrPos(str, pattern, strPos, patPos +1);
+            }
+            return NOT_FOUND;
         }
-        return NOT_FOUND;
     }
     
     if (pattern[patPos] == PERCENT && str[strPos] != NULL_CHAR) {
@@ -198,51 +205,42 @@ int findSubLenAtStrPos(const char str[], const char pattern[], int strPos = 0, i
             return 1 + result_multiple;
     }
 
-    if (pattern[patPos] != NULL_CHAR)
-    {
-        if (pattern[patPos] == DOT || pattern[patPos] == str[strPos])
-        {
-            if (pattern[patPos + 1] == NULL_CHAR)
-                return 1;
-            
-            int result_DOT = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
-                                                                                    
-            if (result_DOT != NOT_FOUND)
-                return 1 + result_DOT;
-        }
+    if ((pattern[patPos] == PERCENT || pattern[patPos] == str[strPos]) && pattern[patPos] != NULL_CHAR) {
+        if (pattern[patPos + 1] == NULL_CHAR) 
+            return 1;
 
-        if (pattern[patPos] == QMARK || pattern[patPos] == str[strPos])
-        {
-            if (pattern[patPos + 1] == NULL_CHAR) 
-                return 1;
-
-            int result_QMARK_one = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
-            int result_QMARK_zero = findSubLenAtStrPos(str, pattern, strPos, patPos + 1); 
-
-            if (result_QMARK_one != NOT_FOUND)
-                return 1 + result_QMARK_one;
-            if (result_QMARK_zero != NOT_FOUND) 
-                return result_QMARK_zero;
-            else
-                return NOT_FOUND;
-        }
-
-        if (pattern[patPos] == PERCENT || pattern[patPos] == str[strPos])
-        {
-            if (pattern[patPos + 1] == NULL_CHAR) 
-                return 1;
-
-            int result = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
-            int result_ignore = findSubLenAtStrPos(str, pattern, strPos, patPos + 1);
-            
-            if (result != NOT_FOUND)
-                return 1 + result;
-            if (result_ignore != NOT_FOUND)
-                return result_ignore;
-            else
-                return NOT_FOUND;
-        }
+        int result = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
+        int resultZero = findSubLenAtStrPos(str, pattern, strPos, patPos + 1);
+        
+        if (result != NOT_FOUND)
+            return 1 + result;
+        if (resultZero != NOT_FOUND)
+            return resultZero;
     }
+
+    if ((pattern[patPos] == QMARK || pattern[patPos] == str[strPos]) && pattern[patPos] != NULL_CHAR) {
+        if (pattern[patPos + 1] == NULL_CHAR) 
+            return 1;
+
+        int result = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
+        int resultZero = findSubLenAtStrPos(str, pattern, strPos, patPos + 1); 
+
+        if (result != NOT_FOUND)
+            return 1 + result;
+        if (resultZero != NOT_FOUND) 
+            return resultZero;
+    }
+
+    if ((pattern[patPos] == DOT || pattern[patPos] == str[strPos]) && pattern[patPos] != NULL_CHAR) {
+        if (pattern[patPos + 1] == NULL_CHAR)
+            return 1;
+        
+        int result = findSubLenAtStrPos(str, pattern, strPos + 1, patPos + 1);
+                                                                                
+        if (result != NOT_FOUND)
+            return 1 + result;
+    }
+    
     return NOT_FOUND;
 }
 
