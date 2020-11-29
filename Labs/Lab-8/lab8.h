@@ -23,4 +23,4 @@ struct Player
 void init_player(Player &, char *);
 void display_info(Player *, int);
 void change_status(Player &, int);
-bool check_bingo(Player);
+bool check_bingo(Player &);

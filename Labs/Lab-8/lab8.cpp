@@ -109,11 +109,12 @@ Return true if there is an entire occupied line, otherwise, return false.
 
 // function name: check_bingo
 // Your code here
-bool check_bingo(Player player) {
+bool check_bingo(Player &player) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             if (player.card_status[i][j] == true){
                 if (j == SIZE-1){
+                    player.bingo = true; 
                     return true;
                 }
             }
@@ -126,6 +127,7 @@ bool check_bingo(Player player) {
         for (int j = 0; j < SIZE; j++) {
             if (player.card_status[j][i] == true){
                 if (j == SIZE-1){
+                    player.bingo = true; 
                     return true;
                 }
             }
@@ -137,6 +139,7 @@ bool check_bingo(Player player) {
     for (int i = 0; i < SIZE; i++) {
         if (player.card_status[i][i] == true){
             if (i == SIZE-1){
+                player.bingo = true; 
                 return true;
             }
         }
@@ -147,6 +150,7 @@ bool check_bingo(Player player) {
     for (int i = 0; i < SIZE; i++) {
         if (player.card_status[i][SIZE - 1 - i] == true){
             if (i == SIZE-1){
+                player.bingo = true;
                 return true;
             }
         }
