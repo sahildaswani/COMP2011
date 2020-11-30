@@ -16,7 +16,6 @@ Node*** generateMap(int width, int height)
             map[i][j] = nullptr;
         }
     }
-    
     return map; 
 }
 
@@ -70,29 +69,29 @@ bool addThing(Node*** map, int width, int height, int x, int y, Thing thing, int
 {
     if (x < width && y < height && x>=0 && y>=0){
         Node *current = map[y][x];
-        
+        Node *n = new Node;
         if (current == nullptr){
-            Node *n = new Node;
             n->thing = thing;
             n->quantity = quantity;
             map[y][x] = n;
-            return true;
         }
-
-        while (current != nullptr){
-            if (current->thing == thing) {
-                current->quantity += quantity;
-                return true;
+        else {
+            while (current != nullptr){
+                if (current->thing == thing) {
+                    current->quantity += quantity;
+                    delete n;
+                    break;
+                }
+                if (current->next == nullptr){
+                    n->thing = thing;
+                    n->quantity = quantity;
+                    current->next = n;
+                    break;
+                }
+                current = current->next;
             }
-            if (current->next == nullptr){
-                Node *n = new Node;
-                n->thing = thing;
-                n->quantity = quantity;
-                current->next = n;
-                return true;
-            }
-            current = current->next;
         }
+        return true;
     }
     return false;
 }
@@ -123,9 +122,6 @@ bool removeThing(Node*** map, int width, int height, int x, int y, Thing thing, 
         while (current->thing != thing && current != nullptr) {
             temp = current;
             current = current->next;
-        }
-        if (current == nullptr) {
-            return false;
         }
         if (current->quantity > quantity) {
             current->quantity -= quantity;
@@ -197,7 +193,7 @@ bool moveHero(char move, Node*** map, int width, int height, HeroStatus &heroSta
     }
 
     if (x >= 0 && y >= 0 && y < height && x < width) {
-        Node *n = new Node;
+        Node *n = map[heroStatus.y][heroStatus.x];
         n->thing = HERO;
         if (map[y][x]==nullptr){
             map[heroStatus.y][heroStatus.x] = nullptr;
@@ -274,6 +270,7 @@ bool moveHero(char move, Node*** map, int width, int height, HeroStatus &heroSta
                     heroStatus.y =y;
                 }
                 else {
+                    deleteLinkedList(map[heroStatus.y][heroStatus.x]);
                     map[heroStatus.y][heroStatus.x] = nullptr;
                     heroStatus.x = x;
                     heroStatus.y =y;
